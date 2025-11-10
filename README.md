@@ -52,7 +52,9 @@ Chaque action est gérée via des fichiers PHP dédiés, avec une structure clai
 
 ├── config/ 
 
-│   └── database.php 
+│   └── database.php
+
+├── logs/ 
 
 ├── views/ 
 

@@ -29,31 +29,43 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $type = trim($_POST['type'] ?? '');
         $niveau = intval($_POST['niveau'] ?? 0);
         
-            // Si la validation passe, on insère dans la base
-        // Insertion dans la base de données
-        try {
-            $tempPokemon = new Pokemon(0, $nom, $type, $niveau);
-            $stmt = $pdo->prepare("INSERT INTO pokemon (nom, type, niveau) VALUES (:nom, :type, :niveau)");
-            $stmt->execute([
-                ':nom' => $nom,
-                ':type' => $type,
-                ':niveau' => $niveau
-            ]);
-            
-            $message = "Le Pokémon <strong>$nom</strong> a été ajouté avec succès !";
-            $messageType = "success";
+        // Validation des données
+        if (empty($nom)) {
+            $message = "Le nom du Pokémon est obligatoire.";
+            $messageType = "error";
+        } elseif (empty($type)) {
+            $message = "Le type du Pokémon est obligatoire.";
+            $messageType = "error";
+        } elseif ($niveau < 1 || $niveau > 100) {
+            $message = "Le niveau doit être entre 1 et 100.";
+            $messageType = "error";
+        } else{
 
-            // Régénérer le token CSRF
-            $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-            
-            // Redirection après 2 secondes
-            header("refresh:2;url=list.php");
-        } catch (\InvalidArgumentException $e) {
-            $message = htmlspecialchars($e->getMessage());
-            $messageType = "error";
-        }catch (PDOException $e) {
-            $message = "Erreur lors de l'ajout : " . $e->getMessage();
-            $messageType = "error";
+            // Insertion dans la base de données
+            try {
+                $tempPokemon = new Pokemon(0, $nom, $type, $niveau);
+                $stmt = $pdo->prepare("INSERT INTO pokemon (nom, type, niveau) VALUES (:nom, :type, :niveau)");
+                $stmt->execute([
+                    ':nom' => $nom,
+                    ':type' => $type,
+                    ':niveau' => $niveau
+                ]);
+                
+                $message = "Le Pokémon <strong>$nom</strong> a été ajouté avec succès !";
+                $messageType = "success";
+
+                // Régénérer le token CSRF
+                $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+                
+                // Redirection après 2 secondes
+                header("refresh:2;url=list.php");
+            } catch (\InvalidArgumentException $e) {
+                $message = htmlspecialchars($e->getMessage());
+                $messageType = "error";
+            }catch (PDOException $e) {
+                $message = "Erreur lors de l'ajout : " . $e->getMessage();
+                $messageType = "error";
+            }
         }
     }
 }

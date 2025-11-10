@@ -57,38 +57,49 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $nom = trim($_POST['nom'] ?? '');
         $type = trim($_POST['type'] ?? '');
         $niveau = intval($_POST['niveau'] ?? 0);
-        
-        // Mise à jour dans la base de données
-        try {
-            $tempPokemon = new Pokemon($id, $nom, $type, $niveau);
-            $stmt = $pdo->prepare("UPDATE pokemon SET nom = :nom, type = :type, niveau = :niveau WHERE id = :id");
-            $stmt->execute([
-                ':nom' => $nom,
-                ':type' => $type,
-                ':niveau' => $niveau,
-                ':id' => $id
-            ]);
-            
-            $message = "Le Pokémon <strong>$nom</strong> a été modifié avec succès !";
-            $messageType = "success";
-            
-            // Mettre à jour l'objet Pokemon
-            $pokemon->setNom($nom);
-            $pokemon->setType($type);
-            $pokemon->setNiveau($niveau);
 
-            $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-            
-            // Redirection après 2 secondes
-            header("refresh:2;url=list.php");
-        } catch (\InvalidArgumentException $e) {
-            $message = htmlspecialchars($e->getMessage());
+        if (empty($nom)) {
+            $message = "Le nom du Pokémon est obligatoire.";
             $messageType = "error";
-        }catch (PDOException $e) {
-            $message = "Erreur lors de la modification : " . $e->getMessage();
+        } elseif (empty($type)) {
+            $message = "Le type du Pokémon est obligatoire.";
             $messageType = "error";
+        } elseif ($niveau < 1 || $niveau > 100) {
+            $message = "Le niveau doit être entre 1 et 100.";
+            $messageType = "error";
+        } else{
+            // Mise à jour dans la base de données
+            try {
+                $tempPokemon = new Pokemon($id, $nom, $type, $niveau);
+                $stmt = $pdo->prepare("UPDATE pokemon SET nom = :nom, type = :type, niveau = :niveau WHERE id = :id");
+                $stmt->execute([
+                    ':nom' => $nom,
+                    ':type' => $type,
+                    ':niveau' => $niveau,
+                    ':id' => $id
+                ]);
+                    
+                $message = "Le Pokémon <strong>$nom</strong> a été modifié avec succès !";
+                $messageType = "success";
+                    
+                // Mettre à jour l'objet Pokemon
+                $pokemon->setNom($nom);
+                $pokemon->setType($type);
+                $pokemon->setNiveau($niveau);
+
+                $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+                    
+                // Redirection après 2 secondes
+                header("refresh:2;url=list.php");
+            } catch (\InvalidArgumentException $e) {
+                $message = htmlspecialchars($e->getMessage());
+                    $messageType = "error";
+            }catch (PDOException $e) {
+                $message = "Erreur lors de la modification : " . $e->getMessage();
+                $messageType = "error";
+            }
+        }
     }
-}
 }
 ?>
 
