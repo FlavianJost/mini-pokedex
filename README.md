@@ -1,4 +1,4 @@
-# \# mini-pokedex en PHP POO
+# mini-pokedex en PHP POO
 
 ## 👤Auteur
 
@@ -81,7 +81,7 @@ Chaque action est gérée via des fichiers PHP dédiés, avec une structure clai
 
 &nbsp;  - Ouvrir le fichier `config/database.php`
 
-&nbsp;  - Modifier les identifiants selon votre configuration locale dans le fichier database.php
+&nbsp;  - Modifier les identifiants selon votre configuration locale
 
 
 
