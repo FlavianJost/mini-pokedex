@@ -2,12 +2,6 @@
 require_once '../autoload.php';
 use App\Pokemon;
 use App\Database;
-/**
- * Page de liste des Pokémon
- * Affiche tous les Pokémon de la base de données dans un tableau
- * Ce fichier nécessite que $pdo soit déjà défini
- */
-
 // Récupération de tous les Pokémon depuis la base de données
 try {
     $pdo = (new Database())->getConnection();
@@ -36,6 +30,7 @@ try {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Liste des Pokémon - Pokédex</title>
+    <link rel="stylesheet" href="../style.css">
     <style>
         * {
             margin: 0;

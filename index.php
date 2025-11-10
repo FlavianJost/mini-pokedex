@@ -1,13 +1,5 @@
 <?php
-/**
- * Page d'accueil du Pokédex
- * Page d'accueil avec présentation et navigation
- */
-
-// Inclusion de l'autoload pour charger automatiquement les classes
 require_once 'autoload.php';
-
-// Utilisation du namespace pour la classe Pokemon
 use App\Pokemon;
 use App\Database;
 

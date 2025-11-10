@@ -1,13 +1,7 @@
 <?php
-namespace App;
-
+require_once __DIR__ . '/../autoload.php';
 use App\Pokemon;
 use App\Database;
-use PDO;
-use PDOException;
-
-// Inclusion de l'autoload
-require_once __DIR__ . '/../autoload.php';
 
 // Inclusion de la connexion à la base de données
 $pdo = (new Database())->getConnection();
@@ -45,25 +39,28 @@ try {
 $message = '';
 $messageType = '';
 
+// Démarrer la session au début
+session_start();
+
+// Générer token CSRF s'il n'existe pas
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Récupération et nettoyage des données
-    $nom = trim($_POST['nom'] ?? '');
-    $type = trim($_POST['type'] ?? '');
-    $niveau = intval($_POST['niveau'] ?? 0);
-    
-    // Validation des données
-    if (empty($nom)) {
-        $message = "Le nom du Pokémon est obligatoire.";
-        $messageType = "error";
-    } elseif (empty($type)) {
-        $message = "Le type du Pokémon est obligatoire.";
-        $messageType = "error";
-    } elseif ($niveau < 1 || $niveau > 100) {
-        $message = "Le niveau doit être entre 1 et 100.";
+    // Vérification CSRF
+    if (!isset($_POST['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
+        $message = "Erreur de sécurité. Veuillez réessayer.";
         $messageType = "error";
     } else {
+        // Récupération et nettoyage des données
+        $nom = trim($_POST['nom'] ?? '');
+        $type = trim($_POST['type'] ?? '');
+        $niveau = intval($_POST['niveau'] ?? 0);
+        
         // Mise à jour dans la base de données
         try {
+            $tempPokemon = new Pokemon($id, $nom, $type, $niveau);
             $stmt = $pdo->prepare("UPDATE pokemon SET nom = :nom, type = :type, niveau = :niveau WHERE id = :id");
             $stmt->execute([
                 ':nom' => $nom,
@@ -79,14 +76,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $pokemon->setNom($nom);
             $pokemon->setType($type);
             $pokemon->setNiveau($niveau);
+
+            $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
             
             // Redirection après 2 secondes
             header("refresh:2;url=list.php");
-        } catch (PDOException $e) {
+        } catch (\InvalidArgumentException $e) {
+            $message = htmlspecialchars($e->getMessage());
+            $messageType = "error";
+        }catch (PDOException $e) {
             $message = "Erreur lors de la modification : " . $e->getMessage();
             $messageType = "error";
-        }
     }
+}
 }
 ?>
 
@@ -337,6 +339,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
             <div class="actions">
                 <button type="submit" class="btn btn-primary">💾 Enregistrer les modifications</button>
+                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
                 <a href="list.php" class="btn btn-secondary">❌ Annuler</a>
             </div>
         </form>

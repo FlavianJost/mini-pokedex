@@ -1,40 +1,38 @@
 <?php
-namespace App;
-
-use App\Pokemon;
-use App\Database;
-use PDO;
-use PDOException;
-
-// Inclusion de l'autoload
 require_once __DIR__ . '/../autoload.php';
+use App\Database;
+use App\Pokemon;
 
 // Inclusion de la connexion à la base de données
 $pdo = (new Database())->getConnection();
 
-// Traitement du formulaire
+// Démarrer la session au début du fichier
+session_start();
+
+// Variables pour les messages
 $message = '';
 $messageType = '';
 
+// Générer token CSRF s'il n'existe pas
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Récupération et nettoyage des données
-    $nom = trim($_POST['nom'] ?? '');
-    $type = trim($_POST['type'] ?? '');
-    $niveau = intval($_POST['niveau'] ?? 0);
-    
-    // Validation des données
-    if (empty($nom)) {
-        $message = "Le nom du Pokémon est obligatoire.";
-        $messageType = "error";
-    } elseif (empty($type)) {
-        $message = "Le type du Pokémon est obligatoire.";
-        $messageType = "error";
-    } elseif ($niveau < 1 || $niveau > 100) {
-        $message = "Le niveau doit être entre 1 et 100.";
+    // Vérification CSRF
+    if (!isset($_POST['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
+        $message = "Erreur de sécurité. Veuillez réessayer.";
         $messageType = "error";
     } else {
+        // Récupération et nettoyage des données
+        $nom = trim($_POST['nom'] ?? '');
+        $type = trim($_POST['type'] ?? '');
+        $niveau = intval($_POST['niveau'] ?? 0);
+        
+            // Si la validation passe, on insère dans la base
         // Insertion dans la base de données
         try {
+            $tempPokemon = new Pokemon(0, $nom, $type, $niveau);
             $stmt = $pdo->prepare("INSERT INTO pokemon (nom, type, niveau) VALUES (:nom, :type, :niveau)");
             $stmt->execute([
                 ':nom' => $nom,
@@ -44,10 +42,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
             $message = "Le Pokémon <strong>$nom</strong> a été ajouté avec succès !";
             $messageType = "success";
+
+            // Régénérer le token CSRF
+            $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
             
             // Redirection après 2 secondes
             header("refresh:2;url=list.php");
-        } catch (PDOException $e) {
+        } catch (\InvalidArgumentException $e) {
+            $message = htmlspecialchars($e->getMessage());
+            $messageType = "error";
+        }catch (PDOException $e) {
             $message = "Erreur lors de l'ajout : " . $e->getMessage();
             $messageType = "error";
         }
@@ -61,6 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ajouter un Pokémon - Pokédex</title>
+    <link rel="stylesheet" href="../style.css">
     <style>
         * {
             margin: 0;
@@ -287,6 +292,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="actions">
                 <button type="submit" class="btn btn-primary">✅ Ajouter le Pokémon</button>
                 <a href="list.php" class="btn btn-secondary">❌ Annuler</a>
+                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
             </div>
         </form>
         

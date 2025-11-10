@@ -37,25 +37,10 @@ CREATE TABLE `pokemon` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `pokemon`
---
-
-INSERT INTO `pokemon` (`id`, `nom`, `type`, `niveau`) VALUES
-(2, 'bonjour', 'Ténèbres', 20);
-
---
--- Indexes for dumped tables
---
-
---
 -- Indexes for table `pokemon`
 --
 ALTER TABLE `pokemon`
   ADD PRIMARY KEY (`id`);
-
---
--- AUTO_INCREMENT for dumped tables
---
 
 --
 -- AUTO_INCREMENT for table `pokemon`

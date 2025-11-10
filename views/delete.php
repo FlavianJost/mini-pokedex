@@ -1,13 +1,17 @@
 <?php
-namespace App;
-
+require_once __DIR__ . '/../autoload.php';
 use App\Pokemon;
 use App\Database;
-use PDO;
-use PDOException;
 
-// Inclusion de l'autoload
-require_once __DIR__ . '/../autoload.php';
+// Démarrage de la session pour le CSRF
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+// Génération du token CSRF s'il n'existe pas
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
 
 // Inclusion de la connexion à la base de données
 $pdo = (new Database())->getConnection();
@@ -46,7 +50,19 @@ $message = '';
 $messageType = '';
 $deleted = false;
 
+// Générer ou vérifier le token CSRF
+if (empty($_SESSION)) {
+    session_start();
+}
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+        die('Token CSRF invalide');
+    }
+    
     if (isset($_POST['confirm']) && $_POST['confirm'] === 'yes') {
         try {
             $stmt = $pdo->prepare("DELETE FROM pokemon WHERE id = :id");
@@ -75,6 +91,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Supprimer un Pokémon - Pokédex</title>
+    <link rel="stylesheet" href="../style.css">
     <style>
         * {
             margin: 0;
@@ -265,10 +282,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
             
             <form method="POST" action="">
+                <?php
+                if (empty($_SESSION)) {
+                    session_start();
+                }
+                if (empty($_SESSION['csrf_token'])) {
+                    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+                }
+                ?>
+                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
                 <input type="hidden" name="confirm" value="yes">
                 <div class="actions">
                     <button type="submit" class="btn btn-danger">🗑️ Oui, supprimer</button>
-                    <a href="list.php" class="btn btn-secondary">❌ Annuler</a>
+                    <a href="list.php" class="btn btn-secondary">❌ Non, annuler</a>
                 </div>
             </form>
         <?php else: ?>

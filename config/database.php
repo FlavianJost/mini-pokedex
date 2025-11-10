@@ -4,14 +4,17 @@
     use PDOException;
     class Database{
         protected PDO $pdo;
-        protected string $dbname = 'pokedex';
         protected string $user = 'root';
         protected string $password = '';
 
         public function __construct() {
             try{
-                $this->pdo=new PDO("mysql:host=127.0.0.1;dbname=$this->dbname",$this->user,$this->password);
-                $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+                $this->pdo=new PDO("mysql:host=127.0.0.1;dbname=pokedex",$this->user,$this->password,[
+                        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+                        PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8mb4",
+                        PDO::ATTR_EMULATE_PREPARES => false
+                ]);
             }catch(PDOException $e){
                 echo $e->getMessage();
             }
