@@ -1,23 +1,16 @@
 # \# mini-pokedex en PHP POO
 
-\## 👤Auteur
+## 👤Auteur
 
-\*\*Nom :\*\* Flavian Jost
-
-
+**Nom :** Flavian Jost
 
 ---
 
-
-
-\## 📌 Description du projet
-
-
+## 📌 Description du projet
 
 Ce projet est un mini Pokédex réalisé en PHP en utilisant la programmation orientée objet (POO).  
 
 Il permet de gérer une liste de Pokémon stockés dans une base de données MySQL.
-
 
 
 Fonctionnalités principales :
@@ -30,19 +23,11 @@ Fonctionnalités principales :
 
 \- Supprimer un Pokémon
 
-
-
 Chaque action est gérée via des fichiers PHP dédiés, avec une structure claire et modulaire.
-
-
 
 ---
 
-
-
-\## 📁 Structure du projet
-
-
+## 📁 Structure du projet
 
 /pokedex-php 
 
@@ -72,23 +57,17 @@ Chaque action est gérée via des fichiers PHP dédiés, avec une structure clai
 
 └── README.md
 
-
-
 ---
 
+## 🚀 Comment lancer le projet
 
-
-\## 🚀 Comment lancer le projet
-
-
-
-1\. \*\*Placer les fichiers PHP sur un serveur web local\*\*  
+1. **Placer les fichiers PHP sur un serveur web local**  
 
 &nbsp;  Exemple : dans le dossier `htdocs` de XAMPP ou `www` de WAMP.
 
 
 
-2\. \*\*Importer la base de données\*\*  
+2. **Importer la base de données**  
 
 &nbsp;  - Ouvrir un logiciel de gestion de base de données comme \*\*phpMyAdmin\*\* ou \*\*HeidiSQL\*\*
 
@@ -98,7 +77,7 @@ Chaque action est gérée via des fichiers PHP dédiés, avec une structure clai
 
 
 
-3\. \*\*Configurer la connexion à la base de données\*\*  
+3. **Configurer la connexion à la base de données**  
 
 &nbsp;  - Ouvrir le fichier `config/database.php`
 
@@ -114,13 +93,13 @@ Chaque action est gérée via des fichiers PHP dédiés, avec une structure clai
 
 
 
-4\. \*\*Accéder au projet via le navigateur\*\*  
+4. **Accéder au projet via le navigateur**  
 
 &nbsp;  - Exemple : `http://localhost/pokedex-php/views/list.php`
 
 
 
-\## 💡 Remarques
+## 💡 Remarques
 
 
 
