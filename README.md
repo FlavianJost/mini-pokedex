@@ -69,7 +69,7 @@ Chaque action est gérée via des fichiers PHP dédiés, avec une structure clai
 
 2. **Importer la base de données**  
 
-&nbsp;  - Ouvrir un logiciel de gestion de base de données comme \*\*phpMyAdmin\*\* ou \*\*HeidiSQL\*\*
+&nbsp;  - Ouvrir un logiciel de gestion de base de données comme **phpMyAdmin** ou **HeidiSQL**
 
 &nbsp;  - Importer le fichier `pokedex.sql`
 
@@ -81,15 +81,7 @@ Chaque action est gérée via des fichiers PHP dédiés, avec une structure clai
 
 &nbsp;  - Ouvrir le fichier `config/database.php`
 
-&nbsp;  - Modifier les identifiants selon votre configuration locale :
-
-&nbsp;    ```php
-
-&nbsp;    protected string $user = 'root';
-
-&nbsp;    protected string $password = '';
-
-&nbsp;    ```
+&nbsp;  - Modifier les identifiants selon votre configuration locale dans le fichier database.php
 
 
 
